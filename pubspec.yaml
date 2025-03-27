@@ -20,7 +20,11 @@ version: 1.0.0+1
 
 environment:
   sdk: ^3.7.2
-
+firebase_auth: ^4.5.0  # Firebase authentication
+cloud_firestorm: ^4.5.0 # Database for storing user details
+provider: ^6.0.5        # State management
+shared_preferences: ^2.2.0 # Save login state
+geolocation: ^9.0.2  # Location permission
 # Dependencies specify other packages that your package needs in order to work.
 # To automatically upgrade your package dependencies to the latest versions
 # consider running `flutter pub upgrade --major-versions`. Alternatively,
@@ -87,3 +91,6 @@ flutter:
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/to/font-from-package
+
+
+
