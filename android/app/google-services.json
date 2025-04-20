@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "374746284709",
+    "project_id": "costa-2",
+    "storage_bucket": "costa-2.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:374746284709:android:1f70ca48fb3bb32d60c34c",
+        "android_client_info": {
+          "package_name": "com.example.costa"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAGa7rXvoFkqcGtWvOiUpwLgV9y8PG_hME"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
