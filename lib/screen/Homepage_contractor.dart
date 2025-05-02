@@ -1,10 +1,13 @@
-// homepage_contractor.dart
 import 'dart:async';
+import 'package:costa/screen/lumpsumcontractorhire_listing.dart';
 import 'package:flutter/material.dart';
 import 'ad_view_page.dart';
 import 'PostServiceStep1.dart';
+import 'wet_plant_hire_listing_page.dart';
+import 'subscription_page.dart'; // ✅ Ensure this exists in the same folder
+import 'lumpsumcontractorhire_listing.dart';
+import 'CustomerProfile.dart';
 
-// Model class for Ad
 class Ad {
   final String imagePath;
   final String title;
@@ -35,7 +38,7 @@ class _HomeScreenState extends State<HomeScreen> {
     HomeContent(),
     PostServiceStep1(),
     NotificationsScreen(),
-    ProfileScreen(),
+    CustomerProfile(),
   ];
 
   void _onItemTapped(int index) {
@@ -48,7 +51,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: PreferredSize(
-        preferredSize: Size.fromHeight(70),
+        preferredSize: const Size.fromHeight(70),
         child: AppBar(
           backgroundColor: Colors.white,
           elevation: 2,
@@ -57,6 +60,18 @@ class _HomeScreenState extends State<HomeScreen> {
             'assets/images/Costa_civil_logo.png',
             height: 100,
           ),
+          actions: [
+            IconButton(
+              icon: const Icon(Icons.workspace_premium_rounded, color: Colors.blue),
+              tooltip: "Subscribe",
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => const SubscriptionPage()),
+                );
+              },
+            ),
+          ],
         ),
       ),
       body: _pages[_selectedIndex],
@@ -66,7 +81,7 @@ class _HomeScreenState extends State<HomeScreen> {
         type: BottomNavigationBarType.fixed,
         selectedItemColor: Colors.blue,
         unselectedItemColor: Colors.grey,
-        items: [
+        items: const [
           BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
           BottomNavigationBarItem(icon: Icon(Icons.add), label: 'Add'),
           BottomNavigationBarItem(icon: Icon(Icons.mail), label: 'Notifications'),
@@ -122,12 +137,12 @@ class _HomeContentState extends State<HomeContent> {
 
   void _startAutoSlide() {
     _timer?.cancel();
-    _timer = Timer.periodic(Duration(seconds: 4), (Timer timer) {
+    _timer = Timer.periodic(const Duration(seconds: 4), (Timer timer) {
       if (_pageController.hasClients) {
         int nextPage = (_current + 1) % ads.length;
         _pageController.animateToPage(
           nextPage,
-          duration: Duration(milliseconds: 500),
+          duration: const Duration(milliseconds: 500),
           curve: Curves.easeInOut,
         );
       }
@@ -166,7 +181,7 @@ class _HomeContentState extends State<HomeContent> {
                   ),
                 ),
               ),
-              SizedBox(width: 8),
+              const SizedBox(width: 8),
               SizedBox(
                 height: 56,
                 child: ElevatedButton(
@@ -175,12 +190,12 @@ class _HomeContentState extends State<HomeContent> {
                     backgroundColor: Colors.blue,
                     foregroundColor: Colors.white,
                   ),
-                  child: FittedBox(child: Text('Search')),
+                  child: const FittedBox(child: Text('Search')),
                 ),
               ),
             ],
           ),
-          SizedBox(height: 16),
+          const SizedBox(height: 16),
           GestureDetector(
             onTapDown: (_) => _pauseAutoSlide(),
             onTapUp: (_) => _resumeAutoSlide(),
@@ -219,16 +234,16 @@ class _HomeContentState extends State<HomeContent> {
                     },
                   ),
                 ),
-                SizedBox(height: 8),
+                const SizedBox(height: 8),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: List.generate(
                     ads.length,
                         (index) => AnimatedContainer(
-                      duration: Duration(milliseconds: 300),
+                      duration: const Duration(milliseconds: 300),
                       width: 8,
                       height: 8,
-                      margin: EdgeInsets.symmetric(horizontal: 4),
+                      margin: const EdgeInsets.symmetric(horizontal: 4),
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
                         color: _current == index ? Colors.blueAccent : Colors.grey,
@@ -239,9 +254,9 @@ class _HomeContentState extends State<HomeContent> {
               ],
             ),
           ),
-          SizedBox(height: 24),
-          Text('Your Favourite', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-          SizedBox(height: 12),
+          const SizedBox(height: 24),
+          const Text('Your Favourite', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+          const SizedBox(height: 12),
           SizedBox(
             height: screenWidth * 0.35,
             child: ListView(
@@ -252,16 +267,16 @@ class _HomeContentState extends State<HomeContent> {
               ],
             ),
           ),
-          SizedBox(height: 24),
-          Text('Service Categories', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-          SizedBox(height: 12),
+          const SizedBox(height: 24),
+          const Text('Service Categories', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+          const SizedBox(height: 12),
           LayoutBuilder(
             builder: (context, constraints) {
               int crossAxisCount = constraints.maxWidth > 600 ? 4 : 2;
               return GridView.count(
                 crossAxisCount: crossAxisCount,
                 shrinkWrap: true,
-                physics: NeverScrollableScrollPhysics(),
+                physics: const NeverScrollableScrollPhysics(),
                 crossAxisSpacing: 12,
                 mainAxisSpacing: 12,
                 childAspectRatio: 2.5,
@@ -294,20 +309,34 @@ class _HomeContentState extends State<HomeContent> {
         elevation: 2,
         side: BorderSide(color: Colors.grey.shade300),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-        padding: EdgeInsets.symmetric(horizontal: 8, vertical: 12),
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 12),
       ),
       onPressed: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (_) => ServicePage(serviceName: label)),
-        );
+        if (label == 'Wet Plant Hire') {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (_) => const WetPlantHireListingPage()),
+          );
+        }
+        else if (label == 'Lump Sum Contractor') {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (_) => const LumpSumContractorListingPage()),
+          );
+         }
+        else {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (_) => ServicePage(serviceName: label)),
+          );
+        }
       },
       child: Row(
         children: [
           Icon(icon, color: Colors.blue),
-          SizedBox(width: 8),
+          const SizedBox(width: 8),
           Expanded(
-            child: Text(label, style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold), overflow: TextOverflow.ellipsis),
+            child: Text(label, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold), overflow: TextOverflow.ellipsis),
           ),
         ],
       ),
@@ -317,7 +346,7 @@ class _HomeContentState extends State<HomeContent> {
 
 class ServicePage extends StatelessWidget {
   final String serviceName;
-  ServicePage({required this.serviceName});
+  const ServicePage({required this.serviceName});
 
   @override
   Widget build(BuildContext context) {
@@ -326,7 +355,7 @@ class ServicePage extends StatelessWidget {
       body: Center(
         child: Text(
           '$serviceName Page',
-          style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+          style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
         ),
       ),
     );
@@ -336,13 +365,13 @@ class ServicePage extends StatelessWidget {
 class NotificationsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Center(child: Text('Notifications Page'));
+    return const Center(child: Text('Notifications Page'));
   }
 }
 
 class ProfileScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Center(child: Text('Profile Page'));
+    return const Center(child: Text('Profile Page'));
   }
 }
