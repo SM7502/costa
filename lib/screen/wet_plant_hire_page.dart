@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:geolocator/geolocator.dart';
@@ -8,6 +9,7 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:file_picker/file_picker.dart';
+import '../utils/keyword_generator.dart';
 
 class WetPlantHirePage extends StatefulWidget {
   const WetPlantHirePage({super.key});
@@ -18,31 +20,51 @@ class WetPlantHirePage extends StatefulWidget {
 
 class _WetPlantHirePageState extends State<WetPlantHirePage> {
   String hireRateOption = 'Fixed rate';
-
   File? selectedImage;
   File? coverLetterFile;
   String? coverLetterFileName;
-
   Position? currentPosition;
   LatLng? selectedLatLng;
   GoogleMapController? mapController;
-
   final TextEditingController companyNameController = TextEditingController();
   final TextEditingController locationController = TextEditingController();
   final TextEditingController contactPrefController = TextEditingController();
   final TextEditingController minRateController = TextEditingController();
   final TextEditingController maxRateController = TextEditingController();
 
-  String? selectedSubCategory;
-  String? selectedItem;
+  List<String> _generateKeywords(String company, String machine, String location) {
+    return [
+      ...company.toLowerCase().split(' '),
+      ...machine.toLowerCase().split(' '),
+      ...location.toLowerCase().split(RegExp(r'[ ,]+')),
+    ];
+  }
 
-  final Map<String, List<String>> categoryItems = {
-    "Agricultural Equipment": ["Tractors", "Sprayers", "Harvesting Equipment"],
-    "Construction Equipment": ["Excavators", "Loaders", "Dozers"],
-    "Cranes and Lifting Equipment": ["Tower Cranes", "Forklifts"],
-    "Forestry Equipment": ["Log Loaders", "Feller Buncher"],
-    "Mining and Quarry Equipment": ["Crusher Equipment", "Stackers"],
-  };
+
+  // Machine Category Structure
+  String? selectedCategory;
+  String? selectedTypeCategory;
+  String? selectedSubCategory;
+  String? selectedFurtherInfo;
+
+  Map<String, dynamic> machineData = {};
+
+  List<String> getCategories() => machineData.keys.toList();
+
+  List<String> getTypeCategories() {
+    if (selectedCategory == null) return [];
+    return (machineData[selectedCategory!] as Map<String, dynamic>).keys.toList();
+  }
+
+  List<String> getSubCategories() {
+    if (selectedCategory == null || selectedTypeCategory == null) return [];
+    return (machineData[selectedCategory!][selectedTypeCategory!] as Map<String, dynamic>).keys.toList();
+  }
+
+  List<String> getFurtherInfo() {
+    if (selectedCategory == null || selectedTypeCategory == null || selectedSubCategory == null) return [];
+    return List<String>.from(machineData[selectedCategory!][selectedTypeCategory!][selectedSubCategory!] as List);
+  }
 
   @override
   void initState() {
@@ -56,6 +78,14 @@ class _WetPlantHirePageState extends State<WetPlantHirePage> {
       _updateMapFromAddress(locationController.text);
     });
     _getCurrentLocation();
+    _loadMachineData();
+  }
+
+  void _loadMachineData() async {
+    final jsonString = await rootBundle.loadString('assets/machine_data.json');
+    setState(() {
+      machineData = Map<String, dynamic>.from(json.decode(jsonString));
+    });
   }
 
   Future<void> _pickImage() async {
@@ -142,12 +172,19 @@ class _WetPlantHirePageState extends State<WetPlantHirePage> {
       );
       return;
     }
+    final company = companyNameController.text.trim();
+    final location = locationController.text.trim();
+    final machine = selectedSubCategory ?? '';
+
+    final keywords = _generateKeywords(company, machine, location);
 
     try {
       await FirebaseFirestore.instance.collection('wet_plant_hire').add({
         'company_name': companyNameController.text.trim(),
+        'category': selectedCategory,
+        'type_category': selectedTypeCategory,
         'sub_category': selectedSubCategory,
-        'machine_item': selectedItem,
+        'further_info': selectedFurtherInfo,
         'hire_rate_option': hireRateOption,
         'min_rate': min,
         'max_rate': max,
@@ -157,6 +194,7 @@ class _WetPlantHirePageState extends State<WetPlantHirePage> {
         'longitude': selectedLatLng?.longitude,
         'cover_letter_file_name': coverLetterFileName,
         'created_at': FieldValue.serverTimestamp(),
+        'keywords': keywords,
       });
 
       ScaffoldMessenger.of(context).showSnackBar(
@@ -174,9 +212,6 @@ class _WetPlantHirePageState extends State<WetPlantHirePage> {
 
   @override
   Widget build(BuildContext context) {
-    final subCategories = categoryItems.keys.toList();
-    final items = selectedSubCategory != null ? categoryItems[selectedSubCategory!] ?? [] : [];
-
     return Scaffold(
       appBar: AppBar(title: const Text("Wet Plant Hire")),
       body: SingleChildScrollView(
@@ -205,17 +240,36 @@ class _WetPlantHirePageState extends State<WetPlantHirePage> {
             _formLabel("Company Name*"),
             _textField(controller: companyNameController, hint: "Enter company name"),
 
-            _formLabel("Machine Sub-Category"),
-            _dropdown(subCategories, selectedSubCategory, (val) {
+            _formLabel("Machine Category"),
+            _dropdown(getCategories(), selectedCategory, (val) {
               setState(() {
-                selectedSubCategory = val;
-                selectedItem = null;
+                selectedCategory = val;
+                selectedTypeCategory = null;
+                selectedSubCategory = null;
+                selectedFurtherInfo = null;
               });
             }),
 
-            _formLabel("Machine Item"),
-            _dropdown(items.cast<String>(), selectedItem, (val) {
-              setState(() => selectedItem = val);
+            _formLabel("Machine Type Category"),
+            _dropdown(getTypeCategories(), selectedTypeCategory, (val) {
+              setState(() {
+                selectedTypeCategory = val;
+                selectedSubCategory = null;
+                selectedFurtherInfo = null;
+              });
+            }),
+
+            _formLabel("Machine Type Sub-Category"),
+            _dropdown(getSubCategories(), selectedSubCategory, (val) {
+              setState(() {
+                selectedSubCategory = val;
+                selectedFurtherInfo = null;
+              });
+            }),
+
+            _formLabel("Further Information"),
+            _dropdown(getFurtherInfo(), selectedFurtherInfo, (val) {
+              setState(() => selectedFurtherInfo = val);
             }),
 
             _formLabel("Hire Rate"),

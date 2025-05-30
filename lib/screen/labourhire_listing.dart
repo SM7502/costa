@@ -1,27 +1,26 @@
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'wet_plant_hire_details_page.dart';
+import 'labourhire_details.dart';
 
-class WetPlantHireListingPage extends StatefulWidget {
-  const WetPlantHireListingPage({super.key});
+class LabourHireListingPage extends StatefulWidget {
+  const LabourHireListingPage({super.key});
 
   @override
-  State<WetPlantHireListingPage> createState() => _WetPlantHireListingPageState();
+  State<LabourHireListingPage> createState() => _LabourHireListingPageState();
 }
 
-class _WetPlantHireListingPageState extends State<WetPlantHireListingPage> {
-  bool showMap = false;
-  late GoogleMapController mapController;
-
-  String searchQuery = '';
+class _LabourHireListingPageState extends State<LabourHireListingPage> {
+  String searchText = '';
+  DateTimeRange? selectedDateRange;
   double? minRateFilter;
   double? maxRateFilter;
-  String? selectedMachineType;
-  DateTimeRange? selectedDateRange;
+  bool showMap = false;
+
   final Map<String, bool> favorites = {};
+  final TextEditingController searchController = TextEditingController();
+  GoogleMapController? mapController;
 
   @override
   void initState() {
@@ -57,7 +56,7 @@ class _WetPlantHireListingPageState extends State<WetPlantHireListingPage> {
 
     final existing = await favRef.where('machine_id', isEqualTo: adId).get();
     if (existing.docs.isEmpty) {
-      data['category'] = 'wet_plant_hire'; // or appropriate collection name
+      data['category'] = 'labour_hire'; // or appropriate collection name
 
       await favRef.add({
         'machine_id': adId,
@@ -88,13 +87,12 @@ class _WetPlantHireListingPageState extends State<WetPlantHireListingPage> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Wet Plant Hire'),
+        title: const Text('Labour Hire Listings'),
         actions: [
           IconButton(
             icon: Icon(showMap ? Icons.list : Icons.map),
             onPressed: () => setState(() => showMap = !showMap),
-            tooltip: showMap ? 'Switch to List View' : 'Switch to Map View',
-          ),
+          )
         ],
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(130),
@@ -103,9 +101,10 @@ class _WetPlantHireListingPageState extends State<WetPlantHireListingPage> {
             child: Column(
               children: [
                 TextField(
-                  onChanged: (val) => setState(() => searchQuery = val.toLowerCase()),
+                  controller: searchController,
+                  onChanged: (val) => setState(() => searchText = val.toLowerCase()),
                   decoration: InputDecoration(
-                    hintText: 'Search by location or company',
+                    hintText: 'Search by name or location',
                     prefixIcon: const Icon(Icons.search),
                     border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
                   ),
@@ -146,20 +145,19 @@ class _WetPlantHireListingPageState extends State<WetPlantHireListingPage> {
       ),
       body: StreamBuilder<QuerySnapshot>(
         stream: FirebaseFirestore.instance
-            .collection('wet_plant_hire')
+            .collection('labour_hire')
             .orderBy('created_at', descending: true)
             .snapshots(),
         builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) return const Center(child: CircularProgressIndicator());
-          if (snapshot.hasError) return Center(child: Text('Error: ${snapshot.error}'));
-          if (!snapshot.hasData || snapshot.data!.docs.isEmpty) return const Center(child: Text('No listings found.'));
+          if (!snapshot.hasData) return const Center(child: CircularProgressIndicator());
 
           final docs = snapshot.data!.docs.where((doc) {
             final data = doc.data() as Map<String, dynamic>;
-            final nameMatch = (data['company_name'] ?? '').toString().toLowerCase().contains(searchQuery);
-            final locMatch = (data['location'] ?? '').toString().toLowerCase().contains(searchQuery);
-            final machineMatch = selectedMachineType == null || data['machine_item'] == selectedMachineType;
-            final minRate = double.tryParse((data['min_rate'] ?? '').toString()) ?? 0;
+            final fullName = "${data['first_name']} ${data['last_name']}".toLowerCase();
+            final locMatch = (data['location'] ?? '').toString().toLowerCase().contains(searchText);
+            final nameMatch = fullName.contains(searchText);
+
+            final minRate = double.tryParse(data['min_rate']?.toString() ?? '') ?? 0;
             final rateMatch = (minRateFilter == null || minRate >= minRateFilter!) &&
                 (maxRateFilter == null || minRate <= maxRateFilter!);
 
@@ -169,7 +167,7 @@ class _WetPlantHireListingPageState extends State<WetPlantHireListingPage> {
                     timestamp.isAfter(selectedDateRange!.start.subtract(const Duration(days: 1))) &&
                     timestamp.isBefore(selectedDateRange!.end.add(const Duration(days: 1))));
 
-            return (nameMatch || locMatch) && machineMatch && rateMatch && dateMatch;
+            return (locMatch || nameMatch) && rateMatch && dateMatch;
           }).toList();
 
           if (showMap) {
@@ -185,19 +183,9 @@ class _WetPlantHireListingPageState extends State<WetPlantHireListingPage> {
                     markerId: MarkerId(doc.id),
                     position: LatLng(lat, lng),
                     infoWindow: InfoWindow(
-                      title: data['machine_item'] ?? 'Machine',
-                      snippet: data['company_name'] ?? '',
+                      title: "${data['first_name']} ${data['last_name']}",
+                      snippet: data['location'],
                     ),
-                    onTap: () {
-                      showDialog(
-                        context: context,
-                        builder: (_) => AlertDialog(
-                          title: Text(data['machine_item'] ?? 'Details'),
-                          content: Text('Location: ' + (data['location'] ?? '')),
-                          actions: [TextButton(onPressed: () => Navigator.pop(context), child: const Text('Close'))],
-                        ),
-                      );
-                    },
                   );
                 }
                 return null;
@@ -210,14 +198,15 @@ class _WetPlantHireListingPageState extends State<WetPlantHireListingPage> {
             itemBuilder: (context, index) {
               final doc = docs[index];
               final data = doc.data() as Map<String, dynamic>;
-              final id = doc.id;
-              final isFav = favorites[id] ?? false;
+              final isFav = favorites[doc.id] ?? false;
 
               return GestureDetector(
                 onTap: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (_) => WetPlantHireDetailsPage(data: data)),
+                    MaterialPageRoute(
+                      builder: (_) => LabourHireDetailsPage(data: data, docId: doc.id),
+                    ),
                   );
                 },
                 child: Card(
@@ -232,28 +221,42 @@ class _WetPlantHireListingPageState extends State<WetPlantHireListingPage> {
                           width: 70,
                           height: 70,
                           decoration: BoxDecoration(color: Colors.grey[200], borderRadius: BorderRadius.circular(8)),
-                          child: const Icon(Icons.build, size: 40, color: Colors.grey),
+                          child: const Icon(Icons.handyman, size: 40, color: Colors.grey),
                         ),
                         const SizedBox(width: 12),
                         Expanded(
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text(data['machine_item'] ?? 'No Title',
-                                  style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                              Text(
+                                "${data['first_name']} ${data['last_name']}",
+                                style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                              ),
                               const SizedBox(height: 4),
-                              Text(data['company_name'] ?? 'No Company Name', style: const TextStyle(fontSize: 14)),
-                              const SizedBox(height: 4),
-                              Text(data['location'] ?? 'No Location',
-                                  style: const TextStyle(fontSize: 12, color: Colors.grey)),
-                              const SizedBox(height: 4),
+                              Text("Trade: ${data['skills'] ?? 'N/A'}"),
+                              Text("Rate Option: ${data['hire_rate_option'] ?? 'N/A'}"),
+                              Text("Rates: \$${data['min_rate']} - \$${data['max_rate']}", style: const TextStyle(fontSize: 13)),
+                              const SizedBox(height: 6),
                               Row(
                                 children: [
-                                  const Icon(Icons.phone, size: 14, color: Colors.blue),
-                                  const SizedBox(width: 5),
+                                  const Icon(Icons.location_on, size: 16, color: Colors.grey),
+                                  const SizedBox(width: 4),
                                   Expanded(
-                                    child: Text(data['contact_preference'] ?? 'No Contact Info',
-                                        style: const TextStyle(fontSize: 12, color: Colors.black)),
+                                    child: Text(
+                                      data['location'] ?? 'No Location',
+                                      style: const TextStyle(color: Colors.grey),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 6),
+                              Row(
+                                children: [
+                                  const Icon(Icons.phone, size: 16, color: Colors.blue),
+                                  const SizedBox(width: 4),
+                                  Text(
+                                    data['contact'] ?? 'No Contact Info',
+                                    style: const TextStyle(color: Colors.black),
                                   ),
                                 ],
                               ),
@@ -266,13 +269,13 @@ class _WetPlantHireListingPageState extends State<WetPlantHireListingPage> {
                             if (currentUser == null) return;
 
                             setState(() {
-                              favorites[id] = !isFav;
+                              favorites[doc.id] = !isFav;
                             });
 
                             if (!isFav) {
-                              await addToFavourites(id, data);
+                              await addToFavourites(doc.id, data);
                             } else {
-                              await removeFromFavourites(id);
+                              await removeFromFavourites(doc.id);
                             }
 
                             ScaffoldMessenger.of(context).showSnackBar(

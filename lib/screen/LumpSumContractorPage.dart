@@ -7,6 +7,7 @@ import 'package:geocoding/geocoding.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import '../utils/keyword_generator.dart';
 
 class LumpSumContractorPage extends StatefulWidget {
   const LumpSumContractorPage({super.key});
@@ -21,6 +22,15 @@ class _LumpSumContractorPageState extends State<LumpSumContractorPage> {
   final TextEditingController contactPrefController = TextEditingController();
   final TextEditingController minRateController = TextEditingController();
   final TextEditingController maxRateController = TextEditingController();
+
+  List<String> _generateKeywords(String company, String location, String category) {
+    return [
+      ...company.toLowerCase().split(' '),
+      ...location.toLowerCase().split(RegExp(r'[ ,]+')),
+      ...category.toLowerCase().split(' '),
+    ];
+  }
+
 
   String hireRateOption = 'Fixed rate';
   String? selectedServiceCategory;
@@ -131,21 +141,28 @@ class _LumpSumContractorPageState extends State<LumpSumContractorPage> {
         await ref.putFile(capabilityFile!);
         capabilityUrl = await ref.getDownloadURL();
       }
+      final company = companyNameController.text.trim();
+      final location = locationController.text.trim();
+      final category = selectedServiceCategory?.trim() ?? '';
+
+      final keywords = _generateKeywords(company, location, category);
 
       final docRef = FirebaseFirestore.instance.collection('lump_sum_contractors').doc();
       await docRef.set({
-        'company_name': companyNameController.text.trim(),
-        'service_category': selectedServiceCategory ?? '',
+        'company_name': company,
+        'service_category': category,
         'capability_pdf_url': capabilityUrl ?? '',
         'hire_rate_option': hireRateOption,
         'min_rate': min,
         'max_rate': max,
         'contact_preference': contactPrefController.text.trim(),
-        'location': locationController.text.trim(),
+        'location': location,
         'lat': selectedLatLng?.latitude ?? 0,
         'lng': selectedLatLng?.longitude ?? 0,
         'created_at': FieldValue.serverTimestamp(),
+        'keywords': keywords,
       });
+
 
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text("Contractor submitted!")),

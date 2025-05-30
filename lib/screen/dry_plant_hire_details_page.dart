@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 
-class WetPlantHireDetailsPage extends StatelessWidget {
+class DryPlantHireDetailsPage extends StatelessWidget {
   final Map<String, dynamic> data;
 
-  const WetPlantHireDetailsPage({super.key, required this.data});
+  const DryPlantHireDetailsPage({super.key, required this.data});
 
   void _showContactDialog(BuildContext context) {
     final contact = data['contact_preference'] ?? 'No contact info available';
@@ -23,31 +23,16 @@ class WetPlantHireDetailsPage extends StatelessWidget {
     );
   }
 
-  Widget _infoRow(String label, String value) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 4.0),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            "$label: ",
-            style: const TextStyle(fontWeight: FontWeight.bold),
-          ),
-          Expanded(child: Text(value)),
-        ],
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Wet Plant Hire Details')),
+      appBar: AppBar(title: Text(data['machine_item'] ?? 'Details')),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            // FIXED IMAGE PLACEHOLDER
             Container(
               width: double.infinity,
               height: 200,
@@ -55,11 +40,11 @@ class WetPlantHireDetailsPage extends StatelessWidget {
                 color: Colors.grey[200],
                 borderRadius: BorderRadius.circular(8),
               ),
-              child: const Icon(Icons.construction, size: 100, color: Colors.grey),
+              child: const Icon(Icons.agriculture, size: 100, color: Colors.grey),
             ),
             const SizedBox(height: 16),
             Text(
-              'For Hire: ${data['further_info'] ?? data['machine_item'] ?? ''}',
+              'Dry Hire: ${data['machine_item'] ?? ''}',
               style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 8),
@@ -82,15 +67,6 @@ class WetPlantHireDetailsPage extends StatelessWidget {
             Row(
               children: [
                 Expanded(
-                  child: ElevatedButton(
-                    onPressed: () {
-                      Navigator.pushNamed(context, '/Homepage_contractor');
-                    },
-                    child: const Text('Message'),
-                  ),
-                ),
-                const SizedBox(width: 10),
-                Expanded(
                   child: OutlinedButton(
                     onPressed: () => _showContactDialog(context),
                     child: const Text('Contact'),
@@ -99,23 +75,14 @@ class WetPlantHireDetailsPage extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 20),
-            const Text('Full Details', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+            const Text('Further Information', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
             const SizedBox(height: 10),
-            _infoRow('Category', data['category'] ?? 'N/A'),
-            _infoRow('Type Category', data['type_category'] ?? 'N/A'),
-            _infoRow('Sub-Category', data['sub_category'] ?? 'N/A'),
-            _infoRow('Further Info', data['further_info'] ?? 'N/A'),
-            _infoRow('Hire Rate Option', data['hire_rate_option'] ?? 'N/A'),
-            _infoRow('Min Rate', '\$${data['min_rate'] ?? 'N/A'}'),
-            _infoRow('Max Rate', '\$${data['max_rate'] ?? 'N/A'}'),
-            _infoRow('Contact Preference', data['contact_preference'] ?? 'N/A'),
-            _infoRow('Cover Letter File', data['cover_letter_file_name'] ?? 'None'),
-            const SizedBox(height: 20),
-            const Text('Features', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+            Text('Hire Rate Option: ${data['hire_rate_option'] ?? ''}'),
+            Text('Rates: \$${data['min_rate']} - \$${data['max_rate']}'),
             const SizedBox(height: 10),
-            const Text('✔ Fuel-efficient and GPS-enabled'),
-            const Text('✔ Available for wet or dry hire'),
-            const Text('✔ Suitable for commercial and residential use'),
+            const Text('✔ High-performance equipment'),
+            const Text('✔ Available immediately for dry hire'),
+            const Text('✔ Flexible rental terms for projects'),
           ],
         ),
       ),

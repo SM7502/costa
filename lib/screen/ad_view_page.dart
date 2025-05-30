@@ -23,10 +23,7 @@ class AdViewPage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text('VIEW AD'),
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back),
-          onPressed: () => Navigator.pop(context),
-        ),
+
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),

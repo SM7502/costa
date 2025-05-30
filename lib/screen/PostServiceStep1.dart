@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:costa/screen/labourhirepage.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'Homepage_contractor.dart';
@@ -57,7 +58,9 @@ class _PostServiceStep1State extends State<PostServiceStep1> {
       Navigator.push(context, MaterialPageRoute(builder: (_) => WetPlantHirePage()));
     } else if (selectedService == 'Dry Plant Hire') {
       Navigator.push(context, MaterialPageRoute(builder: (_) => DryPlantHirePage()));
-    } else if (selectedService == 'Lump Sum Contractor') {
+    } else if (selectedService == 'Labour Hire') {
+      Navigator.push(context, MaterialPageRoute(builder: (_) => LabourHirePage()));
+    }  else if (selectedService == 'Lump Sum Contractor') {
       Navigator.push(context, MaterialPageRoute(builder: (_) => LumpSumContractorPage()));
     } else {
       ScaffoldMessenger.of(context).showSnackBar(

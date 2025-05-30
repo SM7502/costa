@@ -33,7 +33,7 @@ class SubscriptionPage extends StatelessWidget {
           _buildPlanCard(
             context,
             icon: Icons.engineering,
-            title: 'Wet/Dry Plant Hire',
+            title: 'Labour Hire',
             price: '\$29.99/month',
             description: 'First month free\nPost ads for labour jobs',
           ),

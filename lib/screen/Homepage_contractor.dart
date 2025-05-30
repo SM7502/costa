@@ -1,30 +1,20 @@
-import 'dart:async';
-import 'package:costa/screen/lumpsumcontractorhire_listing.dart';
 import 'package:flutter/material.dart';
-import 'ad_view_page.dart';
+import 'dart:async';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:costa/screen/dry_plant_hire_details_page.dart';
+import 'package:costa/screen/labourhirepage.dart';
+import 'package:costa/screen/labourhire_details.dart';
+
+import 'package:costa/screen/labourhire_listing.dart';
+import 'package:costa/screen/lumpsumcontractorhire_listing.dart';
+import 'package:costa/screen/Lumpsumcontractorhire_details.dart';
+import 'package:costa/screen/wet_plant_hire_details_page.dart';
+import 'package:costa/screen/wet_plant_hire_listing_page.dart';
+import 'package:costa/screen/dry_plant_hire_listing_page.dart';
 import 'PostServiceStep1.dart';
-import 'wet_plant_hire_listing_page.dart';
-import 'subscription_page.dart'; // ✅ Ensure this exists in the same folder
-import 'lumpsumcontractorhire_listing.dart';
+import 'subscription_page.dart';
 import 'CustomerProfile.dart';
-
-class Ad {
-  final String imagePath;
-  final String title;
-  final String company;
-  final String location;
-  final String description;
-  final List<String> features;
-
-  Ad({
-    required this.imagePath,
-    required this.title,
-    required this.company,
-    required this.location,
-    required this.description,
-    required this.features,
-  });
-}
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -55,6 +45,7 @@ class _HomeScreenState extends State<HomeScreen> {
         child: AppBar(
           backgroundColor: Colors.white,
           elevation: 2,
+          automaticallyImplyLeading: false,
           centerTitle: true,
           title: Image.asset(
             'assets/images/Costa_civil_logo.png',
@@ -84,7 +75,7 @@ class _HomeScreenState extends State<HomeScreen> {
         items: const [
           BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
           BottomNavigationBarItem(icon: Icon(Icons.add), label: 'Add'),
-          BottomNavigationBarItem(icon: Icon(Icons.mail), label: 'Notifications'),
+          BottomNavigationBarItem(icon: Icon(Icons.chat_bubble), label: 'Notifications'),
           BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profile'),
         ],
       ),
@@ -98,34 +89,11 @@ class HomeContent extends StatefulWidget {
 }
 
 class _HomeContentState extends State<HomeContent> {
-  final List<Ad> ads = [
-    Ad(
-      imagePath: 'assets/images/image1.png',
-      title: 'For Hire: Excavator',
-      company: 'EBA Earthworks',
-      location: 'Melbourne, VIC',
-      description: 'Hydraulic excavator with experienced operator.',
-      features: [
-        'Fuel-efficient and GPS-enabled',
-        'Available for wet or dry hire',
-        'Ideal for commercial and residential jobs',
-      ],
-    ),
-    Ad(
-      imagePath: 'assets/images/image5.png',
-      title: 'For Hire: Loader',
-      company: 'BuildPro Equipment',
-      location: 'Sydney, NSW',
-      description: 'Reliable loader for bulk material handling.',
-      features: [
-        'High load capacity',
-        'Operator included',
-        'Flexible rental duration',
-      ],
-    ),
-  ];
-
   final PageController _pageController = PageController();
+  final TextEditingController _searchController = TextEditingController();
+
+  List<Map<String, dynamic>> searchResults = [];
+  bool _isLoading = false;
   int _current = 0;
   Timer? _timer;
 
@@ -139,7 +107,7 @@ class _HomeContentState extends State<HomeContent> {
     _timer?.cancel();
     _timer = Timer.periodic(const Duration(seconds: 4), (Timer timer) {
       if (_pageController.hasClients) {
-        int nextPage = (_current + 1) % ads.length;
+        int nextPage = (_current + 1) % 2;
         _pageController.animateToPage(
           nextPage,
           duration: const Duration(milliseconds: 500),
@@ -156,12 +124,48 @@ class _HomeContentState extends State<HomeContent> {
   void dispose() {
     _timer?.cancel();
     _pageController.dispose();
+    _searchController.dispose();
     super.dispose();
+  }
+
+  Future<void> _performSearch(String query) async {
+    setState(() {
+      _isLoading = true;
+      searchResults = [];
+    });
+
+    final List<Map<String, dynamic>> results = [];
+
+    for (final collection in [
+      'dry_plant_hire',
+      'wet_plant_hire',
+      'labour_hire',
+      'lump_sum_contractors'
+    ]) {
+      final snapshot = await FirebaseFirestore.instance
+          .collection(collection)
+          .where('keywords', arrayContains: query.toLowerCase())
+          .get();
+
+      results.addAll(snapshot.docs.map((doc) => {
+        'collection': collection,
+        'data': doc.data(),
+        'docId': doc.id,  // 👈 add this line
+      }));
+
+    }
+
+    setState(() {
+      _isLoading = false;
+      searchResults = results;
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
+    final userId = FirebaseAuth.instance.currentUser?.uid;
+
     return SingleChildScrollView(
       padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.05, vertical: 16),
       child: Column(
@@ -172,9 +176,10 @@ class _HomeContentState extends State<HomeContent> {
               Expanded(
                 flex: 3,
                 child: TextField(
+                  controller: _searchController,
                   decoration: InputDecoration(
                     prefixIcon: Icon(Icons.search),
-                    hintText: 'Search',
+                    hintText: 'Search services...',
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
                     ),
@@ -185,7 +190,16 @@ class _HomeContentState extends State<HomeContent> {
               SizedBox(
                 height: 56,
                 child: ElevatedButton(
-                  onPressed: () {},
+                  onPressed: () {
+                    final query = _searchController.text.trim();
+                    if (query.isNotEmpty) {
+                      _performSearch(query);
+                    } else {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text("Please enter a search term")),
+                      );
+                    }
+                  },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.blue,
                     foregroundColor: Colors.white,
@@ -196,6 +210,41 @@ class _HomeContentState extends State<HomeContent> {
             ],
           ),
           const SizedBox(height: 16),
+          if (_isLoading)
+            Center(child: CircularProgressIndicator())
+          else if (searchResults.isNotEmpty)
+            ListView.builder(
+              shrinkWrap: true,
+              physics: NeverScrollableScrollPhysics(),
+              itemCount: searchResults.length,
+              itemBuilder: (context, index) {
+                final result = searchResults[index];
+                final data = result['data'];
+                final collection = result['collection'];
+
+                return ListTile(
+                  title: Text(data['company_name'] ?? data['last_name'] ?? 'No Name'),
+                  subtitle: Text(data['location'] ?? 'No Location'),
+                  trailing: Chip(
+                    label: Text(
+                      collection.replaceAll('_', ' ').toUpperCase(),
+                      style: TextStyle(fontSize: 10),
+                    ),
+                  ),
+                  onTap: () {
+                    if (collection == 'wet_plant_hire') {
+                      Navigator.push(context, MaterialPageRoute(builder: (_) => WetPlantHireDetailsPage(data: data)));
+                    } else if (collection == 'dry_plant_hire') {
+                      Navigator.push(context, MaterialPageRoute(builder: (_) => DryPlantHireDetailsPage(data: data)));
+                    } else if (collection == 'labour_hire') {Navigator.push(context, MaterialPageRoute(builder: (_) => LabourHireDetailsPage(data: data, docId: result['docId'], )));// <-- this must be provided));
+                    } else if (collection == 'lump_sum_contractors') {
+                      Navigator.push(context, MaterialPageRoute(builder: (_) => LumpSumContractorDetailsPage(data: data)));
+                    }
+                  },
+                );
+              },
+            ),
+          const SizedBox(height: 24),
           GestureDetector(
             onTapDown: (_) => _pauseAutoSlide(),
             onTapUp: (_) => _resumeAutoSlide(),
@@ -204,41 +253,20 @@ class _HomeContentState extends State<HomeContent> {
               children: [
                 SizedBox(
                   height: screenWidth * 0.45,
-                  child: PageView.builder(
+                  child: PageView(
                     controller: _pageController,
                     onPageChanged: (index) => setState(() => _current = index),
-                    itemCount: ads.length,
-                    itemBuilder: (context, index) {
-                      final ad = ads[index];
-                      return GestureDetector(
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (_) => AdViewPage(
-                                imagePath: ad.imagePath,
-                                title: ad.title,
-                                company: ad.company,
-                                location: ad.location,
-                                description: ad.description,
-                                features: ad.features,
-                              ),
-                            ),
-                          );
-                        },
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(12),
-                          child: Image.asset(ad.imagePath, fit: BoxFit.cover, width: double.infinity),
-                        ),
-                      );
-                    },
+                    children: [
+                      Image.asset('assets/images/image1.png', fit: BoxFit.cover),
+                      Image.asset('assets/images/image5.png', fit: BoxFit.cover),
+                    ],
                   ),
                 ),
                 const SizedBox(height: 8),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: List.generate(
-                    ads.length,
+                    2,
                         (index) => AnimatedContainer(
                       duration: const Duration(milliseconds: 300),
                       width: 8,
@@ -259,12 +287,62 @@ class _HomeContentState extends State<HomeContent> {
           const SizedBox(height: 12),
           SizedBox(
             height: screenWidth * 0.35,
-            child: ListView(
-              scrollDirection: Axis.horizontal,
-              children: [
-                buildImageCard('assets/images/image3.png'),
-                buildImageCard('assets/images/image4.png'),
-              ],
+            child: userId == null
+                ? const Center(child: Text("Log in to view favourites"))
+                : StreamBuilder<QuerySnapshot>(
+              stream: FirebaseFirestore.instance
+                  .collection('users')
+                  .doc(userId)
+                  .collection('favourites')
+                  .orderBy('saved_at', descending: true)
+                  .snapshots(),
+              builder: (context, snapshot) {
+                if (!snapshot.hasData) return const Center(child: CircularProgressIndicator());
+                final favDocs = snapshot.data!.docs;
+                if (favDocs.isEmpty) return const Center(child: Text("No favourites yet"));
+
+                return ListView.builder(
+                  scrollDirection: Axis.horizontal,
+                  itemCount: favDocs.length,
+                  itemBuilder: (context, index) {
+                    final data = favDocs[index]['ad_data'] as Map<String, dynamic>;
+                    return Padding(
+                      padding: const EdgeInsets.only(right: 10),
+                      child: GestureDetector(
+                        onTap: () {
+                          final category = data['category'];
+                          Widget page;
+
+                          if (category == 'wet_plant_hire') {
+                            page = WetPlantHireDetailsPage(data: data);
+                          } else if (category == 'dry_plant_hire') {
+                            page = DryPlantHireDetailsPage(data: data);
+                          } else if (category == 'labour_hire') {
+                            page = LabourHireDetailsPage(data: data, docId: favDocs[index].id);
+                          } else if (category == 'lump_sum_contractors') {
+                            page = LumpSumContractorDetailsPage(data: data);
+                          } else {
+                            // fallback to a default page or show error
+                            return;
+                          }
+
+                          Navigator.push(context, MaterialPageRoute(builder: (_) => page));
+                        },
+
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(12),
+                          child: Image.asset(
+                            getImageForCategory(data['category']),
+                            width: 160,
+                            fit: BoxFit.cover,
+                          ),
+
+                        ),
+                      ),
+                    );
+                  },
+                );
+              },
             ),
           ),
           const SizedBox(height: 24),
@@ -294,13 +372,6 @@ class _HomeContentState extends State<HomeContent> {
     );
   }
 
-  Widget buildImageCard(String assetPath) {
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(12),
-      child: Image.asset(assetPath, width: 160, fit: BoxFit.cover),
-    );
-  }
-
   Widget buildServiceButton(BuildContext context, IconData icon, String label) {
     return ElevatedButton(
       style: ElevatedButton.styleFrom(
@@ -313,22 +384,13 @@ class _HomeContentState extends State<HomeContent> {
       ),
       onPressed: () {
         if (label == 'Wet Plant Hire') {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (_) => const WetPlantHireListingPage()),
-          );
-        }
-        else if (label == 'Lump Sum Contractor') {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (_) => const LumpSumContractorListingPage()),
-          );
-         }
-        else {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (_) => ServicePage(serviceName: label)),
-          );
+          Navigator.push(context, MaterialPageRoute(builder: (_) => const WetPlantHireListingPage()));
+        } else if (label == 'Dry Plant Hire') {
+          Navigator.push(context, MaterialPageRoute(builder: (_) => const DryPlantHireListingPage()));
+        } else if (label == 'Labour Hire') {
+          Navigator.push(context, MaterialPageRoute(builder: (_) => const LabourHireListingPage()));
+        } else if (label == 'Lump Sum Contractor') {
+          Navigator.push(context, MaterialPageRoute(builder: (_) => const LumpSumContractorListingPage()));
         }
       },
       child: Row(
@@ -336,36 +398,45 @@ class _HomeContentState extends State<HomeContent> {
           Icon(icon, color: Colors.blue),
           const SizedBox(width: 8),
           Expanded(
-            child: Text(label, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold), overflow: TextOverflow.ellipsis),
+            child: Text(
+              label,
+              style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+              overflow: TextOverflow.ellipsis,
+            ),
           ),
         ],
       ),
     );
   }
 }
-
-class ServicePage extends StatelessWidget {
-  final String serviceName;
-  const ServicePage({required this.serviceName});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: Text(serviceName)),
-      body: Center(
-        child: Text(
-          '$serviceName Page',
-          style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-        ),
-      ),
-    );
+String getImageForCategory(String? category) {
+  switch (category) {
+    case 'wet_plant_hire':
+      return 'assets/images/wet_plant.png';
+    case 'dry_plant_hire':
+      return 'assets/images/dry_plant.png';
+    case 'labour_hire':
+      return 'assets/images/labour.png';
+    case 'lump_sum_contractors':
+      return 'assets/images/contractor.png';
+    default:
+      return 'assets/images/default_ad_image.png';
   }
 }
+
 
 class NotificationsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return const Center(child: Text('Notifications Page'));
+    return Center(
+      child: ElevatedButton.icon(
+        onPressed: () {
+          Navigator.pushNamed(context, '/chat');
+        },
+        icon: Icon(Icons.chat),
+        label: Text('Open Chat'),
+      ),
+    );
   }
 }
 

@@ -118,6 +118,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  url_launcher: ^6.1.12
 
   #  firebase
   firebase_core: ^3.13.0
@@ -152,3 +153,8 @@ flutter:
 
   assets:
   - assets/images/
+  - assets/machine_data.json
+  - assets/images/wet_plant.png
+  - assets/images/dry_plant.png
+  - assets/images/labour.png
+  - assets/images/contractor.png

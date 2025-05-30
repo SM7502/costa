@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'login_screen.dart'; // 👈 make sure this is the correct path
 
 class RegistrationScreen extends StatefulWidget {
   const RegistrationScreen({super.key});
@@ -14,7 +15,6 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
   final _auth = FirebaseAuth.instance;
   final _firestore = FirebaseFirestore.instance;
 
-  // Controllers for form fields
   final TextEditingController _firstNameController = TextEditingController();
   final TextEditingController _lastNameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
@@ -43,40 +43,47 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
     });
 
     try {
-      // 1. Create user in Firebase Authentication
-      UserCredential userCredential = await _auth.createUserWithEmailAndPassword(
+      final UserCredential userCredential = await _auth.createUserWithEmailAndPassword(
         email: _emailController.text.trim(),
         password: _passwordController.text.trim(),
       );
 
-      // 2. Save additional user data to Firestore
-      await _firestore.collection('users').doc(userCredential.user!.uid).set({
+      final uid = userCredential.user!.uid;
+
+      // Store profile in Firestore
+      await _firestore.collection('users').doc(uid).set({
         'firstName': _firstNameController.text.trim(),
         'lastName': _lastNameController.text.trim(),
         'email': _emailController.text.trim(),
         'phone': _phoneController.text.trim(),
         'createdAt': FieldValue.serverTimestamp(),
-        'uid': userCredential.user!.uid,
+        'uid': uid,
       });
 
-      // 3. Navigate to home screen after successful registration
-      // Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => HomeScreen()));
-    } on FirebaseAuthException catch (e)
-    {
+      // Optional: Send email verification
+      await userCredential.user!.sendEmailVerification();
+
+      // ✅ Show success message
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Registration successful. Please login.')),
+      );
+
+      // ✅ Redirect to LoginScreen
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (_) => const LoginScreen()),
+      );
+    } on FirebaseAuthException catch (e) {
       String errorMessage = 'Registration failed. Please try again.';
-      if (e.code == 'weak-password')
-      {
+      if (e.code == 'weak-password') {
         errorMessage = 'Password is too weak (min 6 characters)';
-      } else if (e.code == 'email-already-in-use')
-      {
+      } else if (e.code == 'email-already-in-use') {
         errorMessage = 'Email is already registered';
-      } else if (e.code == 'invalid-email')
-      {
+      } else if (e.code == 'invalid-email') {
         errorMessage = 'Invalid email address';
       }
       setState(() => _errorMessage = errorMessage);
-    } catch (e)
-    {
+    } catch (e) {
       setState(() => _errorMessage = 'An unexpected error occurred');
     } finally {
       setState(() => _isLoading = false);
@@ -97,10 +104,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Register'),
-        elevation: 0,
-      ),
+      appBar: AppBar(title: const Text('Register'), elevation: 0),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(20),
         child: Form(
@@ -108,134 +112,30 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              // Error Message
               if (_errorMessage != null)
                 Padding(
                   padding: const EdgeInsets.only(bottom: 16),
-                  child: Text(
-                    _errorMessage!,
-                    style: const TextStyle(color: Colors.red, fontSize: 16),
-                    textAlign: TextAlign.center,
-                  ),
+                  child: Text(_errorMessage!, style: const TextStyle(color: Colors.red), textAlign: TextAlign.center),
                 ),
 
-              // First Name
-              TextFormField(
-                controller: _firstNameController,
-                decoration: const InputDecoration(
-                  labelText: 'First Name',
-                  border: OutlineInputBorder(),
-                ),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter your first name';
-                  }
-                  return null;
-                },
-              ),
+              buildTextField(_firstNameController, 'First Name'),
+              const SizedBox(height: 16),
+              buildTextField(_lastNameController, 'Last Name'),
+              const SizedBox(height: 16),
+              buildTextField(_emailController, 'Email', isEmail: true),
+              const SizedBox(height: 16),
+              buildTextField(_phoneController, 'Phone Number'),
+              const SizedBox(height: 16),
+              buildTextField(_passwordController, 'Password', isPassword: true),
+              const SizedBox(height: 16),
+              buildTextField(_confirmPasswordController, 'Confirm Password', isPassword: true),
               const SizedBox(height: 16),
 
-              // Last Name
-              TextFormField(
-                controller: _lastNameController,
-                decoration: const InputDecoration(
-                  labelText: 'Last Name',
-                  border: OutlineInputBorder(),
-                ),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter your last name';
-                  }
-                  return null;
-                },
-              ),
-              const SizedBox(height: 16),
-
-              // Email
-              TextFormField(
-                controller: _emailController,
-                keyboardType: TextInputType.emailAddress,
-                decoration: const InputDecoration(
-                  labelText: 'Email',
-                  border: OutlineInputBorder(),
-                ),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter your email';
-                  }
-                  if (!RegExp(r'^[\w-/.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(value)) {
-                    return 'Please enter a valid email';
-                  }
-                  return null;
-                },
-              ),
-              const SizedBox(height: 16),
-
-              // Phone
-              TextFormField(
-                controller: _phoneController,
-                keyboardType: TextInputType.phone,
-                decoration: const InputDecoration(
-                  labelText: 'Phone Number',
-                  border: OutlineInputBorder(),
-                ),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter your phone number';
-                  }
-                  return null;
-                },
-              ),
-              const SizedBox(height: 16),
-
-              // Password
-              TextFormField(
-                controller: _passwordController,
-                obscureText: true,
-                decoration: const InputDecoration(
-                  labelText: 'Password',
-                  border: OutlineInputBorder(),
-                ),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter a password';
-                  }
-                  if (value.length < 6) {
-                    return 'Password must be at least 6 characters';
-                  }
-                  return null;
-                },
-              ),
-              const SizedBox(height: 16),
-
-              // Confirm Password
-              TextFormField(
-                controller: _confirmPasswordController,
-                obscureText: true,
-                decoration: const InputDecoration(
-                  labelText: 'Confirm Password',
-                  border: OutlineInputBorder(),
-                ),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please confirm your password';
-                  }
-                  if (value != _passwordController.text) {
-                    return 'Passwords do not match';
-                  }
-                  return null;
-                },
-              ),
-              const SizedBox(height: 16),
-
-              // Terms Checkbox
               Row(
                 children: [
                   Checkbox(
                     value: _agreeToTerms,
-                    onChanged: (value) {
-                      setState(() => _agreeToTerms = value ?? false);
-                    },
+                    onChanged: (value) => setState(() => _agreeToTerms = value ?? false),
                   ),
                   const Expanded(
                     child: Text.rich(
@@ -244,10 +144,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                           TextSpan(text: 'I agree to the '),
                           TextSpan(
                             text: 'Terms and Conditions',
-                            style: TextStyle(
-                              color: Colors.blue,
-                              decoration: TextDecoration.underline,
-                            ),
+                            style: TextStyle(color: Colors.blue, decoration: TextDecoration.underline),
                           ),
                         ],
                       ),
@@ -257,24 +154,40 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
               ),
               const SizedBox(height: 24),
 
-              // Register Button
               ElevatedButton(
+                onPressed: _isLoading ? null : _registerUser,
                 style: ElevatedButton.styleFrom(
                   padding: const EdgeInsets.symmetric(vertical: 16),
-                  backgroundColor: Colors.yellow,
+                  backgroundColor: Colors.yellow[700],
                 ),
-                onPressed: _isLoading ? null : _registerUser,
                 child: _isLoading
                     ? const CircularProgressIndicator(color: Colors.white)
-                    : const Text(
-                  'REGISTER',
-                  style: TextStyle(fontSize: 16),
-                ),
+                    : const Text('REGISTER', style: TextStyle(fontSize: 16)),
               ),
             ],
           ),
         ),
       ),
+    );
+  }
+
+  Widget buildTextField(TextEditingController controller, String label,
+      {bool isEmail = false, bool isPassword = false}) {
+    return TextFormField(
+      controller: controller,
+      obscureText: isPassword,
+      keyboardType: isEmail
+          ? TextInputType.emailAddress
+          : (label.toLowerCase().contains('phone') ? TextInputType.phone : TextInputType.text),
+      decoration: InputDecoration(labelText: label, border: const OutlineInputBorder()),
+      validator: (value) {
+        if (value == null || value.isEmpty) return 'Please enter $label';
+        if (isEmail && !RegExp(r'^[\w-/.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(value)) {
+          return 'Please enter a valid email';
+        }
+        if (isPassword && value.length < 6) return 'Password must be at least 6 characters';
+        return null;
+      },
     );
   }
 }
