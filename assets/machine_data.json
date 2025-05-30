@@ -1,0 +1,755 @@
+{
+  "Agricultural Equipment": {
+    "Balers and Hay Equipment": {
+      "Other - Please Specify": [
+        "Other - Please Specify"
+      ]
+    },
+    "Cotton Equipment": {
+      "Other - Please Specify": [
+        "Other - Please Specify"
+      ]
+    },
+    "Feed Handling Equipment": {
+      "Other - Please Specify": [
+        "Other - Please Specify"
+      ]
+    },
+    "Fertilizer Equipment": {
+      "Other - Please Specify": [
+        "Other - Please Specify"
+      ]
+    },
+    "Fruit and Vegetable Harvesting Equipment": {
+      "Other - Please Specify": [
+        "Other - Please Specify"
+      ]
+    },
+    "Grain Handling Equipment": {
+      "Other - Please Specify": [
+        "Other - Please Specify"
+      ]
+    },
+    "Harvesting Equipment": {
+      "Other - Please Specify": [
+        "Other - Please Specify"
+      ]
+    },
+    "Irrigation Equipment": {
+      "Other - Please Specify": [
+        "Other - Please Specify"
+      ]
+    },
+    "Livestock Equipment": {
+      "Other - Please Specify": [
+        "Other - Please Specify"
+      ]
+    },
+    "Nut Harvesting Equipment": {
+      "Other - Please Specify": [
+        "Other - Please Specify"
+      ]
+    },
+    "Plowing Equipment": {
+      "Other - Please Specify": [
+        "Other - Please Specify"
+      ]
+    },
+    "Potato Equipment": {
+      "Other - Please Specify": [
+        "Other - Please Specify"
+      ]
+    },
+    "Seeding Equipment": {
+      "Other - Please Specify": [
+        "Other - Please Specify"
+      ]
+    },
+    "Silage and Forage Equipment": {
+      "Other - Please Specify": [
+        "Other - Please Specify"
+      ]
+    },
+    "Sprayers": {
+      "Other - Please Specify": [
+        "Other - Please Specify"
+      ]
+    },
+    "Spreaders": {
+      "Other - Please Specify": [
+        "Other - Please Specify"
+      ]
+    },
+    "Stackers and Conveyors": {
+      "Other - Please Specify": [
+        "Other - Please Specify"
+      ]
+    },
+    "Tilage Equipment": {
+      "Other - Please Specify": [
+        "Other - Please Specify"
+      ]
+    },
+    "Wheeled\nQuad Track\nSteiger\nTractors": {
+      "<30HP": [
+        "Other - Please Specify"
+      ],
+      "31-50HP": [
+        "Other - Please Specify"
+      ],
+      "51HP-130HP": [
+        "Other - Please Specify"
+      ],
+      "130HP-400HP": [
+        "Other - Please Specify"
+      ],
+      ">401HP": [
+        "Other - Please Specify"
+      ],
+      "Other - Please Specify": [
+        "Other - Please Specify"
+      ]
+    },
+    "Windrowers and Swathers": {
+      "Other - Please Specify": [
+        "Other - Please Specify"
+      ]
+    }
+  },
+  "Construction Equipment": {
+    "Articulated dump trucks": {
+      "25T": [
+        "Other - Please Specify"
+      ],
+      "30T": [
+        "Other - Please Specify"
+      ],
+      "35T": [
+        "Other - Please Specify"
+      ],
+      "40T": [
+        "Other - Please Specify"
+      ],
+      "45T": [
+        "Other - Please Specify"
+      ],
+      "50T": [
+        "Other - Please Specify"
+      ],
+      "60T": [
+        "Other - Please Specify"
+      ],
+      "Other - Please Specify": [
+        "Other - Please Specify"
+      ]
+    },
+    "Articulated Boom Lifts": {
+      "Other - Please Specify": [
+        "Other - Please Specify"
+      ]
+    },
+    "Articulated Water Carts": {
+      "25T": [
+        "Other - Please Specify"
+      ],
+      "30T": [
+        "Other - Please Specify"
+      ],
+      "35T": [
+        "Other - Please Specify"
+      ],
+      "40T": [
+        "Other - Please Specify"
+      ],
+      "45T": [
+        "Other - Please Specify"
+      ],
+      "50T": [
+        "Other - Please Specify"
+      ],
+      "60T": [
+        "Other - Please Specify"
+      ],
+      "Other - Please Specify": [
+        "Other - Please Specify"
+      ]
+    },
+    "Asphalt Pavers": {
+      "Other - Please Specify": [
+        "Other - Please Specify"
+      ]
+    },
+    "Asphalt Paving Equipment": {
+      "Other - Please Specify": [
+        "Other - Please Specify"
+      ]
+    },
+    "Centre Mount 2wd\nCentre Mount 4wd\nSide Shift 4wd \nBackhoe Loaders": {
+      "Other - Please Specify": [
+        "Other - Please Specify"
+      ]
+    },
+    "Cable Plows": {
+      "Other - Please Specify": [
+        "Other - Please Specify"
+      ]
+    },
+    "Cold Planers": {
+      "Other - Please Specify": [
+        "Other - Please Specify"
+      ]
+    },
+    "Compact Track Loaders": {
+      "Other - Please Specify": [
+        "Other - Please Specify"
+      ]
+    },
+    "Concrete Pumps": {
+      "Other - Please Specify": [
+        "Other - Please Specify"
+      ]
+    },
+    "Container handling equipment": {
+      "45T": [
+        "Other - Please Specify"
+      ],
+      "55T": [
+        "Other - Please Specify"
+      ],
+      "Other - Please Specify": [
+        "Other - Please Specify"
+      ]
+    },
+    "Crawler Carriers": {
+      "Other - Please Specify": [
+        "Other - Please Specify"
+      ]
+    },
+    "Crawler Loaders": {
+      "Other - Please Specify": [
+        "Other - Please Specify"
+      ]
+    },
+    "Demolition Excavators": {
+      "Other - Please Specify": [
+        "Other - Please Specify"
+      ]
+    },
+    "Directional Drills": {
+      "Other - Please Specify": [
+        "Other - Please Specify"
+      ]
+    },
+    "Crawler\nSwamp\nDozers": {
+      "D1": [
+        "Other - Please Specify"
+      ],
+      "D2": [
+        "Other - Please Specify"
+      ],
+      "D3": [
+        "Other - Please Specify"
+      ],
+      "D4": [
+        "Other - Please Specify"
+      ],
+      "D5": [
+        "Other - Please Specify"
+      ],
+      "D6": [
+        "Other - Please Specify"
+      ],
+      "D7": [
+        "Other - Please Specify"
+      ],
+      "D8": [
+        "Other - Please Specify"
+      ],
+      "D9": [
+        "Other - Please Specify"
+      ],
+      "D10": [
+        "Other - Please Specify"
+      ],
+      "D11": [
+        "Other - Please Specify"
+      ],
+      "Other - Please Specify": [
+        "Other - Please Specify"
+      ]
+    },
+    "Tracked\nWheeled\nExcavators": {
+      "<1T": [
+        "Other - Please Specify"
+      ],
+      "1.7T": [
+        "Other - Please Specify"
+      ],
+      "2.5T": [
+        "Other - Please Specify"
+      ],
+      "3T": [
+        "Other - Please Specify"
+      ],
+      "4T": [
+        "Other - Please Specify"
+      ],
+      "5T": [
+        "Other - Please Specify"
+      ],
+      "6T": [
+        "Other - Please Specify"
+      ],
+      "8T": [
+        "Other - Please Specify"
+      ],
+      "10T": [
+        "Other - Please Specify"
+      ],
+      "13T": [
+        "Other - Please Specify"
+      ],
+      "15T": [
+        "Other - Please Specify"
+      ],
+      "17T": [
+        "Other - Please Specify"
+      ],
+      "20T": [
+        "Other - Please Specify"
+      ],
+      "23T": [
+        "Other - Please Specify"
+      ],
+      "25T": [
+        "Other - Please Specify"
+      ],
+      "30T": [
+        "Other - Please Specify"
+      ],
+      "35T": [
+        "Other - Please Specify"
+      ],
+      "36T": [
+        "Other - Please Specify"
+      ],
+      "40T": [
+        "Other - Please Specify"
+      ],
+      "45T": [
+        "Other - Please Specify"
+      ],
+      "49T": [
+        "Other - Please Specify"
+      ],
+      "55T": [
+        "Other - Please Specify"
+      ],
+      "60T": [
+        "Other - Please Specify"
+      ],
+      "65T": [
+        "Other - Please Specify"
+      ],
+      "70T": [
+        "Other - Please Specify"
+      ],
+      "80T": [
+        "Other - Please Specify"
+      ],
+      "90T": [
+        "Other - Please Specify"
+      ],
+      "Other - Please Specify": [
+        "Other - Please Specify"
+      ]
+    },
+    "Foundation and Piling Drills": {
+      "Other - Please Specify": [
+        "Other - Please Specify"
+      ]
+    },
+    "Landfill Compactors": {
+      "816": [
+        "Other - Please Specify"
+      ],
+      "826": [
+        "Other - Please Specify"
+      ],
+      "836": [
+        "Other - Please Specify"
+      ],
+      "Other - Please Specify": [
+        "Other - Please Specify"
+      ]
+    },
+    "Light Towers": {
+      "Other - Please Specify": [
+        "Other - Please Specify"
+      ]
+    },
+    "Motor Graders": {
+      "12M": [
+        "Other - Please Specify"
+      ],
+      "120M": [
+        "Other - Please Specify"
+      ],
+      "140M": [
+        "Other - Please Specify"
+      ],
+      "140M AWD": [
+        "Other - Please Specify"
+      ],
+      "150M": [
+        "Other - Please Specify"
+      ],
+      "160M": [
+        "Other - Please Specify"
+      ],
+      "16M": [
+        "Other - Please Specify"
+      ],
+      "24M": [
+        "Other - Please Specify"
+      ],
+      "Other - Please Specify": [
+        "Other - Please Specify"
+      ]
+    },
+    "Pile Hammers and Extractors": {
+      "Other - Please Specify": [
+        "Other - Please Specify"
+      ]
+    },
+    "Post Drivers": {
+      "Other - Please Specify": [
+        "Other - Please Specify"
+      ]
+    },
+    "Road Marking Equipment": {
+      "Other - Please Specify": [
+        "Other - Please Specify"
+      ]
+    },
+    "Double Smooth Drum\nMulti Tyred\nSingle Smooth Drum\nSingle Padfoot\nRollers": {
+      "1.5T": [
+        "Other - Please Specify"
+      ],
+      "2.5T": [
+        "Other - Please Specify"
+      ],
+      "3.5T": [
+        "Other - Please Specify"
+      ],
+      "7T": [
+        "Other - Please Specify"
+      ],
+      "9T": [
+        "Other - Please Specify"
+      ],
+      "12T": [
+        "Other - Please Specify"
+      ],
+      "16T": [
+        "Other - Please Specify"
+      ],
+      "18T": [
+        "Other - Please Specify"
+      ],
+      "20T": [
+        "Other - Please Specify"
+      ],
+      "Other - Please Specify": [
+        "Other - Please Specify"
+      ]
+    },
+    "Scissor Lifts": {
+      "Other - Please Specify": [
+        "Other - Please Specify"
+      ]
+    },
+    "Elevating\nOpen Bowl\nScrapers": {
+      "613": [
+        "Other - Please Specify"
+      ],
+      "615": [
+        "Other - Please Specify"
+      ],
+      "623": [
+        "Other - Please Specify"
+      ],
+      "627": [
+        "Other - Please Specify"
+      ],
+      "631": [
+        "Other - Please Specify"
+      ],
+      "633": [
+        "Other - Please Specify"
+      ],
+      "637": [
+        "Other - Please Specify"
+      ],
+      "651": [
+        "Other - Please Specify"
+      ],
+      "657": [
+        "Other - Please Specify"
+      ],
+      "Other - Please Specify": [
+        "Other - Please Specify"
+      ]
+    },
+    "Site dumpers": {
+      "Other - Please Specify": [
+        "Other - Please Specify"
+      ]
+    },
+    "Skid Steer Loaders": {
+      "<50HP": [
+        "Other - Please Specify"
+      ],
+      "50-70HP": [
+        "Other - Please Specify"
+      ],
+      ">70HP": [
+        "Other - Please Specify"
+      ],
+      "Other - Please Specify": [
+        "Other - Please Specify"
+      ]
+    },
+    "Soil Compactors": {
+      "815": [
+        "Other - Please Specify"
+      ],
+      "825": [
+        "Other - Please Specify"
+      ],
+      "Other - Please Specify": [
+        "Other - Please Specify"
+      ]
+    },
+    "Soil Stabilisers and Road Reclaimers": {
+      "Other - Please Specify": [
+        "Other - Please Specify"
+      ]
+    },
+    "Telehandlers": {
+      "Other - Please Specify": [
+        "Other - Please Specify"
+      ]
+    },
+    "Telescopic Boom lifts": {
+      "Other - Please Specify": [
+        "Other - Please Specify"
+      ]
+    },
+    "Trenchers": {
+      "Other - Please Specify": [
+        "Other - Please Specify"
+      ]
+    },
+    "Vacuum Systems": {
+      "Other - Please Specify": [
+        "Other - Please Specify"
+      ]
+    },
+    "Log Loader\nWheel Loaders": {
+      "906": [
+        "Other - Please Specify"
+      ],
+      "908": [
+        "Other - Please Specify"
+      ],
+      "910": [
+        "Other - Please Specify"
+      ],
+      "914": [
+        "Other - Please Specify"
+      ],
+      "920": [
+        "Other - Please Specify"
+      ],
+      "924": [
+        "Other - Please Specify"
+      ],
+      "926": [
+        "Other - Please Specify"
+      ],
+      "930": [
+        "Other - Please Specify"
+      ],
+      "938": [
+        "Other - Please Specify"
+      ],
+      "950": [
+        "Other - Please Specify"
+      ],
+      "962": [
+        "Other - Please Specify"
+      ],
+      "966": [
+        "Other - Please Specify"
+      ],
+      "972": [
+        "Other - Please Specify"
+      ],
+      "980": [
+        "Other - Please Specify"
+      ],
+      "982": [
+        "Other - Please Specify"
+      ],
+      "986": [
+        "Other - Please Specify"
+      ],
+      "988": [
+        "Other - Please Specify"
+      ],
+      "990": [
+        "Other - Please Specify"
+      ],
+      "992": [
+        "Other - Please Specify"
+      ],
+      "993": [
+        "Other - Please Specify"
+      ],
+      "995": [
+        "Other - Please Specify"
+      ],
+      "Other - Please Specify": [
+        "Other - Please Specify"
+      ]
+    }
+  },
+  "Cranes and Lifting Equipment": {
+    "Crawler Cranes": {
+      "Other - Please Specify": [
+        "Other - Please Specify"
+      ]
+    },
+    "Dockside and Offshire Cranes": {
+      "Other - Please Specify": [
+        "Other - Please Specify"
+      ]
+    },
+    "Forklifts": {
+      "2T": [
+        "Other - Please Specify"
+      ],
+      "3T": [
+        "Other - Please Specify"
+      ],
+      "4T": [
+        "Other - Please Specify"
+      ],
+      "6T": [
+        "Other - Please Specify"
+      ],
+      "8T": [
+        "Other - Please Specify"
+      ],
+      "15T": [
+        "Other - Please Specify"
+      ],
+      "20T": [
+        "Other - Please Specify"
+      ],
+      "Other - Please Specify": [
+        "Other - Please Specify"
+      ]
+    },
+    "Franna Crane": {
+      "Other - Please Specify": [
+        "Other - Please Specify"
+      ]
+    },
+    "Tower Cranes": {
+      "Other - Please Specify": [
+        "Other - Please Specify"
+      ]
+    }
+  },
+  "Forestry Equipment": {
+    "Debarking Equipment": {
+      "Other - Please Specify": [
+        "Other - Please Specify"
+      ]
+    },
+    "Delimbers": {
+      "Other - Please Specify": [
+        "Other - Please Specify"
+      ]
+    },
+    "Feller Buncher": {
+      "Other - Please Specify": [
+        "Other - Please Specify"
+      ]
+    },
+    "Forestry Grapples": {
+      "Other - Please Specify": [
+        "Other - Please Specify"
+      ]
+    },
+    "Forwarders": {
+      "Other - Please Specify": [
+        "Other - Please Specify"
+      ]
+    },
+    "Log Loaders": {
+      "Other - Please Specify": [
+        "Other - Please Specify"
+      ]
+    },
+    "Skidders": {
+      "Other - Please Specify": [
+        "Other - Please Specify"
+      ]
+    },
+    "Timber Harvesters": {
+      "Other - Please Specify": [
+        "Other - Please Specify"
+      ]
+    },
+    "Timber Processors": {
+      "Other - Please Specify": [
+        "Other - Please Specify"
+      ]
+    },
+    "Yarders": {
+      "Other - Please Specify": [
+        "Other - Please Specify"
+      ]
+    }
+  },
+  "Mining and Quarry Equipment": {
+    "Crusher Equipment": {
+      "Other - Please Specify": [
+        "Other - Please Specify"
+      ]
+    },
+    "Face Shovels": {
+      "Other - Please Specify": [
+        "Other - Please Specify"
+      ]
+    },
+    "Rigid Haul Trucks": {
+      "Other - Please Specify": [
+        "Other - Please Specify"
+      ]
+    },
+    "Screening ": {
+      "Other - Please Specify": [
+        "Other - Please Specify"
+      ]
+    },
+    "Radial Stackers\nTracked Stackers\nStackers": {
+      "Other - Please Specify": [
+        "Other - Please Specify"
+      ]
+    }
+  }
+}
